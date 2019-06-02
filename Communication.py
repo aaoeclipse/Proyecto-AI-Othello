@@ -35,7 +35,10 @@ class Communication:
         # self.game.printBoard()
         mini_max = Minimax(3,1,2)
         # # mini_max.posibleMovies(self.game)
-        mini_max.minimax_a_b_p(self.game, maximizingPlayer=True, depth=5)[0].printBoard()
+        this = mini_max.minimax_a_b_p(self.game, maximizingPlayer=True, depth=5)
+        this[0].printBoard()
+        print(this[1])
+
         # self.game.printBoard()
 
         # self.game.printBoard()

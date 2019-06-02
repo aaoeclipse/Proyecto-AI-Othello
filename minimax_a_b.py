@@ -24,7 +24,7 @@ class Minimax:
              for child in self.posibleMovies(boardObj,self.player):
                  evalBoard = self.minimax_a_b_p(child[0], False, alpha=alpha, beta=beta, depth=depth-1)
                  if maxEval.Heuristic(self.player,self.enemy) < evalBoard[0].Heuristic(self.player,self.enemy):
-                     maxEval = evalBoard
+                     maxEval = copy.deepcopy(evalBoard)
                 #  maxEval = max(maxEval, evalBoard.Heuristic(self.player,self.enemy))
                  alpha = max(alpha, evalBoard[0].Heuristic(self.player,self.enemy))
                  if beta <= alpha:
@@ -38,7 +38,7 @@ class Minimax:
              for child in self.posibleMovies(boardObj, self.enemy):
                  evalBoard = self.minimax_a_b_p(child[0], True, alpha=alpha, beta=beta, depth=depth-1)
                  if minEval.Heuristic(self.player,self.enemy) > evalBoard[0].Heuristic(self.player,self.enemy):
-                     minEval = evalBoard
+                     minEval = copy.deepcopy(evalBoard)
                 #  minEval = min(minEval, evalBoard)
                  beta = min(beta, evalBoard[0].Heuristic(self.player,self.enemy))
                  if beta <= alpha:
