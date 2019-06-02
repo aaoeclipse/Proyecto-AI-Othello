@@ -23,14 +23,16 @@ class Communication:
             8 : 'H'
         }
 
-        # count = 0
-        # while count < 10:
-        #     if self.game.checkIfAvailable(y=random.randint(1,8),x=self.columns.get(random.randint(1,8)),player=(count % 2)+1, dynamic=False):
-        #         count += 1
-        # self.game.printBoard()
+        count = 0
+        while count < 10:
+            if self.game.checkIfAvailable(y=random.randint(1,8),x=self.columns.get(random.randint(1,8)),player=(count % 2)+1, dynamic=False):
+                count += 1
 
         mini_max = Minimax(3,1,2)
-        mini_max.posibleMovies(self.game)
+        # mini_max.posibleMovies(self.game)
+        mini_max.minimax_a_b_p(self.game, maximizingPlayer=True, depth=3)
+        self.game.printBoard()
+
         # self.game.checkIfAvailable(y=3,x='E',player=1)
         # self.game.printBoard()
 

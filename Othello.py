@@ -15,6 +15,7 @@ class Othello:
             'G' : 7,
             'H' : 8
         }
+        self.set_heuristic = False
         if givenBoard is None:
             # Create board 8x8
             self.board = [
@@ -28,6 +29,10 @@ class Othello:
                 [0,0,0,0,0,0,0,0]]
         else:
             self.board = givenBoard
+
+    def setHeuristic(self, heuristic):
+        self.setHeuristic = True
+        self.given_heuristic = heuristic
     
     def checkIfAvailable(self, y, x, player, dynamic=True):
         """ Changes the value of the cell if it's available """
@@ -43,7 +48,6 @@ class Othello:
         if self.board[y][x] == 0:
             self.board[y][x] = player
             if (self.checkFlip(x,y)):
-                print('[+] Attack Pass')
                 if not dynamic:
                     newBoard = self.board
                     self.board = currBoard
@@ -52,9 +56,8 @@ class Othello:
                     return True
             else:
                 self.board[y][x] = 0
-                print('[*] You have to input a valid position (flips atleast 1 of the opponent)')
-        else:
-            print('Casilla no displonible')
+        # else:
+        #     print('Casilla no displonible')
         return False
 
     def getAndTransform(self, number):
@@ -72,7 +75,6 @@ class Othello:
             print(x)
         
     def setBoard(self, board):
-        print('[*] Changed Board')
         self.board = np.array(board).reshape((8, 8))
 
     def reset(self):
@@ -186,6 +188,9 @@ class Othello:
     def Heuristic(self, player, enemy):
         """ Gets the heuristics depending on the state of the board """
         # adds all the players coins
+        if self.setHeuristic == True:
+            return self.given_heuristic
+        
         positive_points = 0
         negative_points = 0
         for xi in range(8):
@@ -196,3 +201,4 @@ class Othello:
                     negative_points += 1
         result = positive_points - negative_points
         return result
+    

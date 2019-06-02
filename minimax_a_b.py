@@ -9,35 +9,44 @@ class Minimax:
         self.depth = depth
         self.player = player
         self.enemy = enemy
+        self.moves = []
     
     def minimax_a_b_p(self, boardObj, maximizingPlayer, alpha=-math.inf, beta=math.inf,  depth=0):
         """ recursion, finds the best move based on the heuristic of the board """
         if depth == 0 or boardObj.Game_Finish():
-            # retyrb 
-            return 5
+            return boardObj # .Heuristic(self.player,self.enemy)
 
         if maximizingPlayer:
-             maxEval = -math.inf
-             for child in self.posibleMovies(boardObj):
-                 eval = minimax_a_b_p(child, False, alpha=alpha, beta=beta, depth=depth-1)
-                 maxEval = max(maxEval, eval.Heuristic)
-                 alpha = max(alpha, eval.Heuristic)
+             maxEval = Othello()
+             maxEval.setHeuristic(-math.inf)
+
+            #  print(posScenarios)
+             for child in self.posibleMovies(boardObj,self.player):
+                 evalBoard = self.minimax_a_b_p(child, False, alpha=alpha, beta=beta, depth=depth-1)
+                 if maxEval.Heuristic(self.player,self.enemy) < evalBoard.Heuristic(self.player,self.enemy):
+                     maxEval = evalBoard
+                #  maxEval = max(maxEval, evalBoard.Heuristic(self.player,self.enemy))
+                 alpha = max(alpha, evalBoard.Heuristic(self.player,self.enemy))
                  if beta <= alpha:
                      break
                  return maxEval
 
         else:
-             minEval = math.inf
-             for each in self.posibleMovies(boardObj):
-                 eval = minimax_a_b_p(child, True, alpha=alpha, beta=beta, depth=depth-1)
-                 minEval = min(minEval, eval)
-                 beta = min(beta, eval)
+             minEval = Othello()
+             minEval.setHeuristic(math.inf)
+
+             for child in self.posibleMovies(boardObj, self.enemy):
+                 evalBoard = self.minimax_a_b_p(child, True, alpha=alpha, beta=beta, depth=depth-1)
+                 if minEval.Heuristic(self.player,self.enemy) > evalBoard.Heuristic(self.player,self.enemy):
+                     minEval = evalBoard
+                #  minEval = min(minEval, evalBoard)
+                 beta = min(beta, evalBoard.Heuristic(self.player,self.enemy))
                  if beta <= alpha:
                      break
                  return minEval
 
 
-    def posibleMovies(self, boardObject):
+    def posibleMovies(self, boardObject, player):
         """ Checks which possible moves it can make and returns the board """
         posToEval = self.surrounding(boardObject.board)
         currBoard = copy.deepcopy(boardObject.board)
@@ -45,15 +54,14 @@ class Minimax:
         possibleBoardResults = []
 
         for position in posToEval:
-            if (boardObject.checkIfAvailable(position[0]+1, position[1]+1, player=self.player)):
+            if (boardObject.checkIfAvailable(position[0]+1, position[1]+1, player=player)):
                 possibleBoardResults.append(copy.deepcopy(boardObject))
-                boardObject.printBoard()
+                # boardObject.printBoard()
                 boardObject.setBoard(currBoard)
-            else:
-                print('[-] This is not possible')
 
-        for x in possibleBoardResults:
-            print(x.Heuristic(self.player, self.enemy))
+        # for x in possibleBoardResults:
+        #     print(x.Heuristic(self.player, self.enemy))
+        return possibleBoardResults
 
     def surrounding(self, board):
         """ Check which moves to evaluate """
