@@ -34,7 +34,7 @@ class Othello:
         self.setHeuristic = True
         self.given_heuristic = heuristic
     
-    def checkIfAvailable(self, y, x, player, dynamic=True):
+    def checkIfAvailable(self, y, x, player):
         """ Changes the value of the cell if it's available """
         currBoard = self.board
         if type(x) == int:
@@ -42,22 +42,17 @@ class Othello:
         else:
             x = int(self.columns.get(x)) - 1
         y = y - 1
+        # print('x: {}, y: {}'.format(x,y))
         if x > 7 or y > 7:
             return False
 
         if self.board[y][x] == 0:
             self.board[y][x] = player
             if (self.checkFlip(x,y)):
-                if not dynamic:
-                    newBoard = self.board
-                    self.board = currBoard
-                    return True, newBoard
-                else:
-                    return True
+                # print('SUCESS x:{}, y: {}'.format(x,y))
+                return True
             else:
                 self.board[y][x] = 0
-        # else:
-        #     print('Casilla no displonible')
         return False
 
     def getAndTransform(self, number):
@@ -75,7 +70,7 @@ class Othello:
             print(x)
         
     def setBoard(self, board):
-        self.board = np.array(board).reshape((8, 8))
+        self.board = np.array(board).reshape((8, 8)).tolist()
 
     def reset(self):
         print('[*] Board Reset')
@@ -104,15 +99,13 @@ class Othello:
             enemy = 2
         else:
             enemy = 1
-
+        # print('x: {} y: {}! first'.format(x,y))
+        # print(self.board[y][x])
         countFails = 0
         for i in range(8):
             # print("i == {}".format(i))
             if(self.checkDirection(x,y,(i), player, enemy) == False):
                 countFails = countFails + 1
-                # print('Failed:',end=' ')
-            # print('x: {}, y:{}, i:{}, player:{}, enemy:{}'.format(x,y,i,player,enemy))
-            
         if countFails == 8:
             return False
         return True
@@ -155,17 +148,32 @@ class Othello:
             if dir == 3 or dir == 5 or dir == 8:
                 if tmpx == 7:
                     break
+            
             tmpx = tmpx + vector[0]
             tmpy = tmpy + vector[1]
+
+            # print('---------- SILVER ------------')
+            # print(x,y)
+            # print(tmpx, tmpy)
+
+            # print('ENEMY:')
+            # print(enemy)
+            # print('curr: {} in position: {},{}'.format(self.board[tmpy][tmpx],tmpx,tmpy))
             if self.board[tmpy][tmpx] == enemy:
+                # print('going! {} {}'.format(tmpx, tmpy))
                 positionToFlip.append((tmpx,tmpy))
                 
             elif self.board[tmpy][tmpx] == player:
+                # print('Player {}'.format(player))
+                # print('position {} {}'.format(tmpx,tmpy))
+                # print('curr {}'.format(self.board[tmpy][tmpx]))
                 self.flip(positionToFlip, player)
+                # print('here1')
                 break
 
             elif self.board[tmpy][tmpx] == 0:
                 positionToFlip = []
+                # print('here2')
                 break
             else:
                 print('[-] Error on Othello: expecting 0,1,2 got {}'.format(self.board[tmpy][tmpx]))

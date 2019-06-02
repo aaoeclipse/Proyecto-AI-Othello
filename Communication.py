@@ -22,18 +22,22 @@ class Communication:
             7 : 'G',
             8 : 'H'
         }
-
-        count = 0
-        while count < 10:
-            if self.game.checkIfAvailable(y=random.randint(1,8),x=self.columns.get(random.randint(1,8)),player=(count % 2)+1, dynamic=False):
-                count += 1
-
-        mini_max = Minimax(3,1,2)
-        # mini_max.posibleMovies(self.game)
-        mini_max.minimax_a_b_p(self.game, maximizingPlayer=True, depth=3)
+        # newboard = [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 2, 0, 0, 0, 0, 2, 1, 2, 0, 0, 2, 2, 2, 1, 1, 0, 0, 0, 0, 2, 0, 2, 1, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        newboard =[0, 0, 0, 0, 1, 0, 0, 0,0, 0, 1, 0, 1, 0, 2, 0,0, 0, 1, 1, 1, 2, 0, 0,2, 2, 2, 1, 1, 0, 0, 0,0, 2, 0, 2, 1, 0, 0, 0,0, 0, 0, 1, 2, 0, 0, 0,0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0, 0]
+        self.game.setBoard(newboard)
         self.game.printBoard()
+        # count = 0
+        # while count < 10:
+        #     if self.game.checkIfAvailable(y=random.randint(1,8),x=self.columns.get(random.randint(1,8)),player=(count % 2)+1, dynamic=False):
+        #         count += 1
 
-        # self.game.checkIfAvailable(y=3,x='E',player=1)
+        # self.game.checkIfAvailable(y=1,x='B',player=2)
+        # self.game.printBoard()
+        mini_max = Minimax(3,1,2)
+        # # mini_max.posibleMovies(self.game)
+        mini_max.minimax_a_b_p(self.game, maximizingPlayer=True, depth=5)[0].printBoard()
+        # self.game.printBoard()
+
         # self.game.printBoard()
 
         # count = 0
