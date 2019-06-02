@@ -20,12 +20,10 @@ class Minimax:
              maxEval = Othello()
              maxEval.setHeuristic(-math.inf)
 
-            #  print(posScenarios)
              for child in self.posibleMovies(boardObj,self.player):
                  evalBoard = self.minimax_a_b_p(child, False, alpha=alpha, beta=beta, depth=depth-1)
                  if maxEval.Heuristic(self.player,self.enemy) < evalBoard.Heuristic(self.player,self.enemy):
                      maxEval = evalBoard
-                #  maxEval = max(maxEval, evalBoard.Heuristic(self.player,self.enemy))
                  alpha = max(alpha, evalBoard.Heuristic(self.player,self.enemy))
                  if beta <= alpha:
                      break
@@ -39,7 +37,6 @@ class Minimax:
                  evalBoard = self.minimax_a_b_p(child, True, alpha=alpha, beta=beta, depth=depth-1)
                  if minEval.Heuristic(self.player,self.enemy) > evalBoard.Heuristic(self.player,self.enemy):
                      minEval = evalBoard
-                #  minEval = min(minEval, evalBoard)
                  beta = min(beta, evalBoard.Heuristic(self.player,self.enemy))
                  if beta <= alpha:
                      break
@@ -54,13 +51,9 @@ class Minimax:
         possibleBoardResults = []
 
         for position in posToEval:
-            if (boardObject.checkIfAvailable(position[0]+1, position[1]+1, player=player)):
+            if (boardObject.checkIfAvailable(x=position[0]+1, y=position[1]+1, player=player)):
                 possibleBoardResults.append(copy.deepcopy(boardObject))
-                # boardObject.printBoard()
                 boardObject.setBoard(currBoard)
-
-        # for x in possibleBoardResults:
-        #     print(x.Heuristic(self.player, self.enemy))
         return possibleBoardResults
 
     def surrounding(self, board):
