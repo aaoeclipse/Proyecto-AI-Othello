@@ -65,11 +65,11 @@ class Communication:
             # if it returns none, probably means there is no other position
             if new == None:
                 print('NO MORE MOVES')
-                positionAttack = 0
+                positionAttack = None
                 newGame.printBoard()
             elif new.moves == []:
                 print('NO MORE MOVES')
-                positionAttack = 0
+                positionAttack = None
             else:
                 x,y = new.moves[0]
                 print('TESTING {} {}'.format(x,y))
@@ -79,19 +79,17 @@ class Communication:
                 #     print('[-] THAT WAS NOT SUPPOSED TO HAPPEN!')
                 #     newGame.printBoard()
                 #     print('TESTING {} {}'.format(x,y))
-                    
-            positionAttack = ((y+1)-1)*8 + (x+1)
+                positionAttack = ((y+1)-1)*8 + (x+1) - 1
 
             # Mostramos el board
             print('Attack on : ({},{})'.format(x,y) )
             self.game.printBoard()
-            print(positionAttack)
 
             self.sio.emit('play', {
                 'tournament_id': self.id,
                 'player_turn_id': playerTurnID,
                 'game_id': gameID,
-                'movement': (positionAttack-1)
+                'movement': positionAttack
                 })
 
         @self.sio.on('finish')
