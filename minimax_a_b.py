@@ -10,7 +10,7 @@ class Minimax:
         self.enemy = enemy
     
     def minimax_a_b_p(self, boardObj, maximizingPlayer, alpha=-math.inf, beta=math.inf,  depth=0):
-        print(depth)
+        # print(depth)
         # print('boardObj: {}'.format(boardObj.Heuristic(1,2)))
         # boardObj.printBoard()
         """ recursion, finds the best move based on the heuristic of the board """
