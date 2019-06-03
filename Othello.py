@@ -29,12 +29,14 @@ class Othello:
                 [0,0,0,0,0,0,0,0]]
         else:
             self.board = givenBoard
+        self.moves = []
+        self.last_move = [-1,-1]
 
     def setHeuristic(self, heuristic):
         self.setHeuristic = True
         self.given_heuristic = heuristic
     
-    def checkIfAvailable(self, y, x, player, dynamic=True):
+    def checkIfAvailable(self, y, x, player):
         """ Changes the value of the cell if it's available """
         currBoard = self.board
         if type(x) == int:
@@ -48,12 +50,9 @@ class Othello:
         if self.board[y][x] == 0:
             self.board[y][x] = player
             if (self.checkFlip(x,y)):
-                if not dynamic:
-                    newBoard = self.board
-                    self.board = currBoard
-                    return True, newBoard
-                else:
-                    return True
+                self.moves.append([x,y])
+                self.last_move = [x,y]
+                return True
             else:
                 self.board[y][x] = 0
         # else:
@@ -75,7 +74,7 @@ class Othello:
             print(x)
         
     def setBoard(self, board):
-        self.board = np.array(board).reshape((8, 8))
+        self.board = np.array(board).reshape((8, 8)).tolist()
 
     def reset(self):
         print('[*] Board Reset')
@@ -145,18 +144,24 @@ class Othello:
         while True:
             if dir <= 3:
                 if tmpy == 0:
+                    positionToFlip = []
                     break
             if dir >= 5:
                 if tmpy == 7:
+                    positionToFlip = []
                     break 
             if dir == 1 or dir == 4 or dir == 6:
                 if tmpx == 0:
+                    positionToFlip = []
                     break
             if dir == 3 or dir == 5 or dir == 8:
                 if tmpx == 7:
+                    positionToFlip = []
                     break
+
             tmpx = tmpx + vector[0]
             tmpy = tmpy + vector[1]
+
             if self.board[tmpy][tmpx] == enemy:
                 positionToFlip.append((tmpx,tmpy))
                 
@@ -167,6 +172,7 @@ class Othello:
             elif self.board[tmpy][tmpx] == 0:
                 positionToFlip = []
                 break
+
             else:
                 print('[-] Error on Othello: expecting 0,1,2 got {}'.format(self.board[tmpy][tmpx]))
                 break

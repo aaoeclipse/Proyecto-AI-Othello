@@ -4,14 +4,17 @@ import random
 from Othello import *
 from aiohttp import web
 from minimax_a_b import Minimax
+import copy
 
 class Communication:
     """ Aqui va a estar la comunicacion entre el player y el backend """
 
-    def __init__(self, ip):
+    def __init__(self, ip, username, id):
         self.ip = ip
         self.sio = socketio.Client()
         self.game = Othello()
+        self.username = username
+        self.id = id
         self.columns = {
             1 : 'A',
             2 : 'B',
@@ -22,34 +25,8 @@ class Communication:
             7 : 'G',
             8 : 'H'
         }
+        self.connect(self.username, self.id)
 
-        count = 0
-        while count < 10:
-            if self.game.checkIfAvailable(y=random.randint(1,8),x=self.columns.get(random.randint(1,8)),player=(count % 2)+1, dynamic=False):
-                count += 1
-
-        mini_max = Minimax(3,1,2)
-        # mini_max.posibleMovies(self.game)
-        mini_max.minimax_a_b_p(self.game, maximizingPlayer=True, depth=3)
-        self.game.printBoard()
-
-        # self.game.checkIfAvailable(y=3,x='E',player=1)
-        # self.game.printBoard()
-
-        # count = 0
-        # while not self.game.Game_Finish():
-        #     self.game.printBoard()
-        #     if self.game.checkIfAvailable(y=random.randint(1,8),x=self.columns.get(random.randint(1,8)),player=(count % 2)+1, dynamic=False):
-        #         count += 1
-        # self.game.printBoard()
-        # winner = self.game.Heuristic(1,2)
-        # if  winner < 0:
-        #     print('Player 2 wins by {} points'.format(-winner))    
-        # if  winner > 0:
-        #     print('Player 1 wins by {} points'.format(winner))    
-        # if  winner == 0:
-        #     print('Draw!')    
-        # print('Game Finish')
 
     def connect(self, username, id):
         """ Connects and responds with signin """
@@ -57,8 +34,8 @@ class Communication:
         @self.sio.on('connect')
         def on_connect():
             self.sio.emit('signin', {
-            'user_name': 'DejateVenir',
-            'tournament_id': 142857,
+            'user_name': self.username,
+            'tournament_id': self.id,
             'user_role': 'player'
             })
 
@@ -74,21 +51,38 @@ class Communication:
 
             print('Recived board: ')
             self.game.setBoard(board)
-
-            while True:
-                idx = random.randint(1,8)
-                x = self.columns.get(idx)
-                y = random.randint(1,8)
-                if (self.game.checkIfAvailable(y, x)):
-                    break
+            # mini_max!
+            mini_max = Minimax(player=(playerTurnID), enemy=((playerTurnID%2) + 1))
+            # copy game
+            newGame = copy.deepcopy(self.game)
+            newGame.moves = []
+            # Predicts future moves and gets the first one
+            new = mini_max.minimax_a_b_p(newGame, maximizingPlayer=True, depth=50)
+            # if it returns none, probably means there is no other position
+            if new == None:
+                print('NO MORE MOVES')
+                newGame.printBoard()
+            elif new.moves == []:
+                print('NO MORE MOVES')
+            else:
+                x,y = new.moves[0]
+                # print('TESTING {} {}'.format(x,y))
+                if self.game.checkIfAvailable(x=(x+1), y=(y+1), player=1):
+                    pass
+                else:
+                    print('[-] THAT WAS NOT SUPPOSED TO HAPPEN!')
+                    newGame.printBoard()
+                    print('TESTING {} {}'.format(x,y))
+                    
             
-            positionAttack = (y-1)*8 + idx
+            positionAttack = ((y+1)-1)*8 + (x+1)
+
             # Mostramos el board
             print('Attack on : ({},{})'.format(x,y) )
             self.game.printBoard()
 
             self.sio.emit('play', {
-                'tournament_id': 142857,
+                'tournament_id': self.id,
                 'player_turn_id': playerTurnID,
                 'game_id': gameID,
                 'movement': positionAttack
@@ -109,7 +103,7 @@ class Communication:
             self.game.reset()
 
             self.sio.emit('player_ready', {
-                'tournament_id': 142857,
+                'tournament_id': self.id,
                 'player_turn_id': playerTurnID,
                 'game_id': gameID
                 })
