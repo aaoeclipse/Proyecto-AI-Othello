@@ -3,3 +3,4 @@
 1. pip3 install -r requirements.txt
 2. python3 Manager.py [ip] [port]
 3. Input username
+4. Input tournament id
