@@ -15,16 +15,18 @@ class Communication:
         self.game = Othello()
         self.username = username
         self.id = id
-        self.columns = {
-            1 : 'A',
-            2 : 'B',
-            3 : 'C',
-            4 : 'D',
-            5 : 'E',
-            6 : 'F',
-            7 : 'G',
-            8 : 'H'
-        }
+        # self.columns = {
+        #     1 : 'A',
+        #     2 : 'B',
+        #     3 : 'C',
+        #     4 : 'D',
+        #     5 : 'E',
+        #     6 : 'F',
+        #     7 : 'G',
+        #     8 : 'H'
+        # }
+        
+
         self.connect(self.username, self.id)
 
 
@@ -41,18 +43,20 @@ class Communication:
 
         @self.sio.on('ok_signin')
         def on_signin():
-            print('Success!')
+            print("Successfully signed in!")
 
         @self.sio.on('ready')
         def on_ready(data):
+            print('ready!')
             gameID = data.get('game_id')
             playerTurnID = data.get('player_turn_id')
             board = data.get('board')
-
+            print('GAMEID: {}'.format(playerTurnID))
             print('Recived board: ')
             self.game.setBoard(board)
+            self.game.printBoard()
             # mini_max!
-            mini_max = Minimax(player=(playerTurnID), enemy=((playerTurnID%2) + 1))
+            mini_max = Minimax(player=(playerTurnID))
             # copy game
             newGame = copy.deepcopy(self.game)
             newGame.moves = []
@@ -61,31 +65,33 @@ class Communication:
             # if it returns none, probably means there is no other position
             if new == None:
                 print('NO MORE MOVES')
+                positionAttack = 0
                 newGame.printBoard()
             elif new.moves == []:
                 print('NO MORE MOVES')
+                positionAttack = 0
             else:
                 x,y = new.moves[0]
-                # print('TESTING {} {}'.format(x,y))
-                if self.game.checkIfAvailable(x=(x+1), y=(y+1), player=1):
-                    pass
-                else:
-                    print('[-] THAT WAS NOT SUPPOSED TO HAPPEN!')
-                    newGame.printBoard()
-                    print('TESTING {} {}'.format(x,y))
+                print('TESTING {} {}'.format(x,y))
+                # if self.game.checkIfAvailable(x=(x+1), y=(y+1), player=1):
+                #     positionAttack = ((y+1)-1)*8 + (x+1)
+                # else:
+                #     print('[-] THAT WAS NOT SUPPOSED TO HAPPEN!')
+                #     newGame.printBoard()
+                #     print('TESTING {} {}'.format(x,y))
                     
-            
             positionAttack = ((y+1)-1)*8 + (x+1)
 
             # Mostramos el board
             print('Attack on : ({},{})'.format(x,y) )
             self.game.printBoard()
+            print(positionAttack)
 
             self.sio.emit('play', {
                 'tournament_id': self.id,
                 'player_turn_id': playerTurnID,
                 'game_id': gameID,
-                'movement': positionAttack
+                'movement': (positionAttack-1)
                 })
 
         @self.sio.on('finish')
@@ -96,7 +102,7 @@ class Communication:
             board = data.get('board')
 
             print('{},{},{},{}'.format(gameID, playerTurnID, winnerTurnID, board))
-            print('GAME FINISH {}'.format(winnerTurnID))
+            print('GAME FINISH! Winner={}'.format(winnerTurnID))
             self.game.setBoard(board)
             self.game.printBoard()
 
@@ -108,6 +114,6 @@ class Communication:
                 'game_id': gameID
                 })
 
-        self.sio.connect(self.ip)
 
+        self.sio.connect(self.ip)
         self.sio.wait()

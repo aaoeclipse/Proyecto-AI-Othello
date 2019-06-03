@@ -39,11 +39,9 @@ class Othello:
     def checkIfAvailable(self, y, x, player):
         """ Changes the value of the cell if it's available """
         currBoard = self.board
-        if type(x) == int:
-            x = x - 1
-        else:
-            x = int(self.columns.get(x)) - 1
+        x = x - 1
         y = y - 1
+        
         if x > 7 or y > 7:
             return False
 
